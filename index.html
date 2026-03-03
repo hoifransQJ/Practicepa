@@ -33,10 +33,19 @@ body {
     display: none;
 }
 
+/* Horizontal button container */
+.button-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+    position: relative;
+}
+
 button {
     padding: 12px 25px;
     font-size: 18px;
-    margin: 10px;
     cursor: pointer;
     border: none;
     border-radius: 8px;
@@ -86,9 +95,13 @@ video {
 
 <!-- Question Screen -->
 <div class="screen hidden" id="questionScreen">
-    <h1>Be honest… Are you the most beautiful in the world?</h1>
-    <button class="yes-btn" onclick="playVideo()">Yes</button>
-    <button class="no-btn" id="noButton">No</button>
+    <h1>Who do you think is more beautiful?</h1>
+
+    <div class="button-row">
+        <button class="yes-btn" onclick="playVideo()">Ana de Armas</button>
+        <button class="no-btn" id="noButton">Sydney Sweeney</button>
+    </div>
+
     <p id="lieText" class="hidden">You are lying 😏</p>
 </div>
 
@@ -112,7 +125,8 @@ function playVideo() {
     document.getElementById("videoScreen").classList.remove("hidden");
 
     const video = document.getElementById("myVideo");
-    video.muted = true; 
+    video.muted = true;
+
     video.play().then(() => {
         video.muted = false;
     });
@@ -129,6 +143,7 @@ function moveButton() {
     const buttonWidth = noButton.offsetWidth;
     const buttonHeight = noButton.offsetHeight;
 
+    const containerRect = questionScreen.getBoundingClientRect();
     const yesRect = yesButton.getBoundingClientRect();
     const questionRect = questionText.getBoundingClientRect();
 
@@ -136,27 +151,26 @@ function moveButton() {
     let overlap;
 
     do {
-        x = Math.random() * (window.innerWidth * 0.9 - buttonWidth);
-        y = Math.random() * (window.innerHeight * 0.9 - buttonHeight);
+        x = Math.random() * (containerRect.width - buttonWidth);
+        y = Math.random() * (containerRect.height - buttonHeight);
 
         const noRect = {
-            left: x,
-            right: x + buttonWidth,
-            top: y,
-            bottom: y + buttonHeight
+            left: containerRect.left + x,
+            right: containerRect.left + x + buttonWidth,
+            top: containerRect.top + y,
+            bottom: containerRect.top + y + buttonHeight
         };
 
-        overlap = !(
-            noRect.right < yesRect.left ||
-            noRect.left > yesRect.right ||
-            noRect.bottom < yesRect.top ||
-            noRect.top > yesRect.bottom
-        ) || !(
-            noRect.right < questionRect.left ||
-            noRect.left > questionRect.right ||
-            noRect.bottom < questionRect.top ||
-            noRect.top > questionRect.bottom
-        );
+        overlap =
+        !(noRect.right < yesRect.left ||
+          noRect.left > yesRect.right ||
+          noRect.bottom < yesRect.top ||
+          noRect.top > yesRect.bottom)
+        ||
+        !(noRect.right < questionRect.left ||
+          noRect.left > questionRect.right ||
+          noRect.bottom < questionRect.top ||
+          noRect.top > questionRect.bottom);
 
     } while (overlap);
 
